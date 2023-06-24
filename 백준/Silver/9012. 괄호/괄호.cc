@@ -31,7 +31,6 @@ int main() {
             if( input[i] == '(' ) {
                 // CONDITION: 문자열이 '(' 일 경우
                 stack_01.push(input[i]);
-                continue;
             } else {
                 // CONDITION: 문자열이 ')' 일 경우
 
