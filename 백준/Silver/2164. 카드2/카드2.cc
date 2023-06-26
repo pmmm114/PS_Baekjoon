@@ -21,16 +21,14 @@ int main() {
     }
 
     
-    int num;
     while(queue.size() > 1) {
         // 제일 위 제거
         queue.pop();
 
         // 제일 위 요소 가져오기
-        num = queue.front();
-        queue.pop();
+        queue.push(queue.front());
 
-        queue.push(num);
+        queue.pop();
     }
 
     cout << queue.front() << '\n';
