@@ -1,71 +1,54 @@
 #include <string>
-#include <vector>
-#include <utility>
 #include <queue>
+#include <utility>
+#include <vector>
+#include <math.h>
+#include <cstring>
 #include <iostream>
 
 using namespace std;
 
-bool bfs(int x, int y, vector<vector<string>> &place) {
-    int dx[] = {0, 1, 0, -1};
-    int dy[] = {1, 0, -1, 0};
-    bool visited[5][5] = {false};
-    queue<pair<pair<int, int>, int>> q;
+int dx[4] = {1,0,-1,0};
+int dy[4] = {0,1,0,-1};
+bool BFS(vector<string> board,int x, int y){
+    queue<pair<int,int>> Q;
+    bool visited[5][5] = {false,};
+    
     visited[x][y] = true;
-    q.push({{x, y}, 0});
-    
-    while(!q.empty()) {
-        int cx = q.front().first.first;
-        int cy = q.front().first.second;
-        int cnt = q.front().second;
-        q.pop();
-        
-        for(int i=0;i<4;i++) {
-            int nx = cx + dx[i];
-            int ny = cy + dy[i];
-    
-            if (nx < 0 || nx >= 5 || ny < 0 || ny >= 5 || visited[nx][ny]) continue;
+    Q.push({x,y});
+    while(!Q.empty()){
+        int curX = Q.front().first;
+        int curY = Q.front().second;
+        Q.pop();
+        for(int i=0; i<4; i++){
+            int nx = curX + dx[i];
+            int ny = curY + dy[i];
+            int d = abs(x-nx) + abs(y-ny);
+            if(nx < 0 || ny < 0 || nx>=5 || ny >=5) continue;
+            if(visited[nx][ny] || d > 2) continue;
+            visited[nx][ny] = true;
             
-            if (place[nx][ny] == "O" && cnt < 2) {
-                q.push({{nx, ny}, cnt+1});
-                visited[nx][ny] = true;
-            } else if (place[nx][ny] == "P") {
-                if (abs(nx - x) + abs(ny - y) <= 2) return false;
-            }
+            if(board[nx][ny] == 'X') continue; // 맨하탄 거리가 2 이하인 경우만 보는거니까 파티션 있으면 통과
+            else if(board[nx][ny] == 'P') return false;
+            else Q.push({nx,ny});
         }
     }
-    
     return true;
 }
-
-int find_dist(vector<vector<string>> &place) {
-    // i 행, j 열
-    for(int i=0;i<5;i++) {
-        for(int j=0;j<5;j++) {
-            if (place[i][j] == "P") {
-                if (!bfs(i, j, place)) return 0;
+int isCorrect(vector<string> board){
+    for(int i=0; i<5; i++){
+        for(int j=0; j<5; j++){
+            if(board[i][j] == 'P'){
+                if(!BFS(board,i,j)) return 0; // 거리두기 안지킴
             }
         }
     }
-    
-    return 1;    
+    return 1;
 }
-
 vector<int> solution(vector<vector<string>> places) {
     vector<int> answer;
-    
-    for(int i=0;i<places.size();i++) {
-        vector<vector<string>> tmp_all;
-        for(int j=0;j<5;j++) {
-            vector<string> tmp_row;
-            for(int k=0;k<places[i][j].length();k++) {
-                tmp_row.push_back(string(1, places[i][j][k]));
-            }
-            tmp_all.push_back(tmp_row);
-        }
-        int result = find_dist(tmp_all);
-        answer.push_back(result);
+    for(int i=0; i<5; i++){
+        answer.push_back(isCorrect(places[i]));
     }
-    
     return answer;
 }
